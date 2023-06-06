@@ -1,0 +1,42 @@
+import dns.resolver
+
+def check_dmarc(domain):
+    """Check DMARC record for a given domain"""
+    try:
+        answer = dns.resolver.resolve(f"_dmarc.{domain}", "TXT")
+        print(f"DMARC record found for {domain}: {answer[0].to_text()}")
+    except dns.resolver.NXDOMAIN:
+        print(f"No DMARC record found for {domain}")
+
+def check_dkim(domain, selector):
+    """Check DKIM record for a given domain and selector"""
+    try:
+        answer = dns.resolver.resolve(f"{selector}._domainkey.{domain}", "TXT")
+        print(f"DKIM record found for {domain} with selector {selector}: {answer[0].to_text()}")
+    except dns.resolver.NXDOMAIN:
+        print(f"No DKIM record found for {domain} with selector {selector}")
+
+def check_spf(domain):
+    """Check SPF record for a given domain"""
+    try:
+        answer = dns.resolver.resolve(f"{domain}", "TXT")
+        print(f"SPF record found for {domain}: {answer[0].to_text()}")
+    except dns.resolver.NXDOMAIN:
+        print(f"No SPF record found for {domain}")
+
+def check_records(domain):
+    """Check DMARC, DKIM, and SPF records for a given domain"""
+    print("Checking records for domain:", domain)
+    check_dmarc(domain)
+    check_dkim(domain, "selector1")
+    check_dkim(domain, "selector2")
+    check_spf(domain)
+
+# Prompt user for domain name
+try:
+    domain = input("Enter domain name: ")
+    # Check records for entered domain
+    check_records(domain)
+except SyntaxError:
+    print("Invalid domain name")
+    exit()
